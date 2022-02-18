@@ -31,10 +31,24 @@ app.post('/createPost1', async (req, res) => {
 
     const sql = `
     INSERT INTO posts (author, title, body) VALUES 
-    ('James Dow', 'Post 2', 'Text of post2 about post2')
+    (?, ?, ?)
     `;
+    // lvl1
+    // const author = req.body.author;
+    // const title = req.body.title;
+    // const body = req.body.body;
+    // lvl2
+    // const { author } = req.body;
+    // const { title } = req.body;
+    // const { body } = req.body;
+    // lvl3
+    const { author, title, body } = req.body;
+    // console.log(Object.values(req.body));
+    // console.log('Object.values(req.body) ===', Object.values(req.body));
 
-    const [rows, fields] = await connection.query(sql);
+    // console.log('req.body ===', req.body);
+
+    const [rows, fields] = await connection.execute(sql, [author, title, body]);
 
     // visi veiksmai su db
     await connection.close();
@@ -42,6 +56,7 @@ app.post('/createPost1', async (req, res) => {
       rows,
       fields,
     });
+    // res.json('ok');
   } catch (error) {
     console.log('klaida prisijungiant', error);
     res.status(500).send('klaida kazkur del kazko');
@@ -75,6 +90,8 @@ app.get('/createTablePosts', async (req, res) => {
     res.status(500).send('klaida kazkur del kazko');
   }
 });
+
+// GET /posts (grazinas visus posts) SELECT * FROM posts
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 

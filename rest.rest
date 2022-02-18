@@ -5,4 +5,8 @@ GET http://localhost:3000/createTablePosts
 POST  http://localhost:3000/createPost1
 Content-Type: application/json
 
-{}
+{
+  "title": "post4",
+  "author": "Jimm Jillson",
+  "body": "this is body of POST 4"
+}
