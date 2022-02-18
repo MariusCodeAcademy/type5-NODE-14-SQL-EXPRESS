@@ -1,1 +1,8 @@
-GET http://localhost:3000/
+GET http://localhost:3000/createTablePosts
+
+### 
+
+POST  http://localhost:3000/createPost1
+Content-Type: application/json
+
+{}
