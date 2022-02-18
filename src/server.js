@@ -92,6 +92,30 @@ app.get('/createTablePosts', async (req, res) => {
 });
 
 // GET /posts (grazinas visus posts) SELECT * FROM posts
+app.get('/posts', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    const [rows] = await conn.query('SELECT * FROM posts');
+    await conn.close();
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+});
+// GET /posts/:id (grazinas single post) SELECT * FROM posts
+app.get('/posts/:id', async (req, res) => {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    const sql = 'SELECT * FROM posts WHERE post_id = ?';
+    const [rows] = await conn.execute(sql, [req.params.id]);
+    await conn.close();
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+});
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 

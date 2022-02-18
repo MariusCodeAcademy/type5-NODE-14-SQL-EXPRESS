@@ -1,6 +1,13 @@
 GET http://localhost:3000/createTablePosts
 
 ### 
+GET http://localhost:3000/posts
+
+### 
+
+GET http://localhost:3000/posts/4
+
+### 
 
 POST  http://localhost:3000/createPost1
 Content-Type: application/json
