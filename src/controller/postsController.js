@@ -40,6 +40,51 @@ async function createPost(req, res) {
   }
 }
 
+async function postsIndex(req, res) {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    const [rows] = await conn.query('SELECT * FROM posts');
+    await conn.close();
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+}
+async function postsSingle(req, res) {
+  try {
+    const conn = await mysql.createConnection(dbConfig);
+    const sql = 'SELECT * FROM posts WHERE post_id = ?';
+    const [rows] = await conn.execute(sql, [req.params.id]);
+    await conn.close();
+    res.json(rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+}
+async function deletePost(req, res) {
+  try {
+    const { id } = req.params;
+    const conn = await mysql.createConnection(dbConfig);
+    // // DELETE FROM posts WHERE post_id = ? LIMIT 1
+    const sql = 'DELETE FROM posts WHERE post_id = ? LIMIT 1';
+    const [deleteResult] = await conn.execute(sql, [id]);
+    await conn.close();
+    if (deleteResult.affectedRows !== 1) {
+      res.status(400).json('nei viena eilute neistrinta');
+      return;
+    }
+    res.json(deleteResult);
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+  }
+}
+
 module.exports = {
   createPost,
+  postsIndex,
+  postsSingle,
+  deletePost,
 };
