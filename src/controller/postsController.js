@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const dbConfig = require('../dbConfig');
+const { singleDbExecute } = require('../helpers/sqlHelpers');
 const { getAllPosts } = require('../model/postModel');
 
 async function createPost(req, res) {
@@ -52,16 +53,14 @@ async function postsIndex(req, res) {
   res.json(allPostsArr);
 }
 async function postsSingle(req, res) {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    const sql = 'SELECT * FROM posts WHERE post_id = ?';
-    const [rows] = await conn.execute(sql, [req.params.id]);
-    await conn.close();
-    res.json(rows);
-  } catch (error) {
-    console.log(error);
+  const sql = 'SELECT * FROM posts WHERE post_id = ?';
+  const result = singleDbExecute(sql, req.params.id);
+  if (result === false) {
     res.status(500);
+    return;
   }
+
+  res.json(result);
 }
 async function deletePost(req, res) {
   try {
@@ -71,10 +70,10 @@ async function deletePost(req, res) {
     const sql = 'DELETE FROM posts WHERE post_id = ? LIMIT 1';
     const [deleteResult] = await conn.execute(sql, [id]);
     await conn.close();
-    if (deleteResult.affectedRows !== 1) {
-      res.status(400).json('nei viena eilute neistrinta');
-      return;
-    }
+    // if (deleteResult.affectedRows !== 1) {
+    //   res.status(400).json('nei viena eilute neistrinta');
+    //   return;
+    // }
     res.json(deleteResult);
   } catch (error) {
     console.log(error);
