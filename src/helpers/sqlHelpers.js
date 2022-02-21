@@ -17,8 +17,10 @@ async function singleDbExecute(sql, id) {
   try {
     const conn = await mysql.createConnection(dbConfig);
     // const sql = 'SELECT * FROM posts WHERE post_id = ?';
+    console.log('singleDbExecute sql, id ===', sql, id);
     const [rows] = await conn.execute(sql, [id]);
     await conn.close();
+    console.log('rows ===', rows);
     return rows;
   } catch (error) {
     console.log(error);

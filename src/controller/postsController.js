@@ -1,7 +1,7 @@
 const mysql = require('mysql2/promise');
 const dbConfig = require('../dbConfig');
 const { singleDbExecute } = require('../helpers/sqlHelpers');
-const { getAllPosts } = require('../model/postModel');
+const { getAllPosts, updatePostDb } = require('../model/postModel');
 
 async function createPost(req, res) {
   try {
@@ -42,6 +42,18 @@ async function createPost(req, res) {
   }
 }
 
+async function updatePost(req, res) {
+  const newPostData = req.body;
+  const idOfPostToUpdate = req.params.id;
+
+  const updateResult = await updatePostDb(newPostData, idOfPostToUpdate);
+  if (updateResult === false) {
+    res.status(500);
+    return;
+  }
+  res.json(updateResult);
+}
+
 async function postsIndex(req, res) {
   const allPostsArr = await getAllPosts();
 
@@ -54,7 +66,7 @@ async function postsIndex(req, res) {
 }
 async function postsSingle(req, res) {
   const sql = 'SELECT * FROM posts WHERE post_id = ?';
-  const result = singleDbExecute(sql, req.params.id);
+  const result = await singleDbExecute(sql, req.params.id);
   if (result === false) {
     res.status(500);
     return;
@@ -63,22 +75,18 @@ async function postsSingle(req, res) {
   res.json(result);
 }
 async function deletePost(req, res) {
-  try {
-    const { id } = req.params;
-    const conn = await mysql.createConnection(dbConfig);
-    // // DELETE FROM posts WHERE post_id = ? LIMIT 1
-    const sql = 'DELETE FROM posts WHERE post_id = ? LIMIT 1';
-    const [deleteResult] = await conn.execute(sql, [id]);
-    await conn.close();
-    // if (deleteResult.affectedRows !== 1) {
-    //   res.status(400).json('nei viena eilute neistrinta');
-    //   return;
-    // }
-    res.json(deleteResult);
-  } catch (error) {
-    console.log(error);
+  const sql = 'DELETE FROM posts WHERE post_id = ? LIMIT 1';
+  const deleteResult = await singleDbExecute(sql, req.params.id);
+  // TODO: itraukti i singleDbExecute kad veiktu tik kai deletinam
+  // if (deleteResult.affectedRows !== 1) {
+  //   res.status(400).json('nei viena eilute neistrinta');
+  //   return;
+  // }
+  if (deleteResult === false) {
     res.status(500);
+    return;
   }
+  res.json(deleteResult);
 }
 
 module.exports = {
@@ -86,4 +94,5 @@ module.exports = {
   postsIndex,
   postsSingle,
   deletePost,
+  updatePost,
 };
