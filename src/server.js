@@ -117,6 +117,9 @@ app.get('/posts/:id', async (req, res) => {
   }
 });
 
+// GET /posts/:id (trina viena posta ir isitikinam kad istryne)
+// DELETE FROM posts WHERE post_id = ? LIMIT 1
+
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
 // const userInput = '45'; DROP DATABASE Users'
