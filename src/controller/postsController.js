@@ -1,5 +1,6 @@
 const mysql = require('mysql2/promise');
 const dbConfig = require('../dbConfig');
+const { getAllPosts } = require('../model/postModel');
 
 async function createPost(req, res) {
   try {
@@ -41,15 +42,14 @@ async function createPost(req, res) {
 }
 
 async function postsIndex(req, res) {
-  try {
-    const conn = await mysql.createConnection(dbConfig);
-    const [rows] = await conn.query('SELECT * FROM posts');
-    await conn.close();
-    res.json(rows);
-  } catch (error) {
-    console.log(error);
+  const allPostsArr = await getAllPosts();
+
+  if (allPostsArr === false) {
     res.status(500);
+    return;
   }
+
+  res.json(allPostsArr);
 }
 async function postsSingle(req, res) {
   try {
